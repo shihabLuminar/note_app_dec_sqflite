@@ -144,6 +144,22 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                   ),
                 ),
               ),
+              InkWell(
+                onTap: () {},
+                child: Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white),
+                  child: Text(
+                    "Save",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )
             ],
           ),
         ),
