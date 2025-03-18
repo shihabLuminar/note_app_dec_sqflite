@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:note_app_dec_sqflite/controller/note_screen_controller.dart';
+import 'package:note_app_dec_sqflite/view/note_screen/note_screen.dart';
 
 class AddNoteScreen extends StatefulWidget {
   const AddNoteScreen({super.key});
@@ -8,6 +10,10 @@ class AddNoteScreen extends StatefulWidget {
 }
 
 class _AddNoteScreenState extends State<AddNoteScreen> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController desController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -27,6 +33,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
             spacing: 16,
             children: [
               TextFormField(
+                controller: titleController,
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   hintText: "Enter",
@@ -54,6 +61,7 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                 ),
               ),
               TextFormField(
+                controller: desController,
                 maxLines: 15,
                 minLines: 5,
                 style: TextStyle(color: Colors.white),
@@ -97,55 +105,83 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     ),
                     Expanded(
                       child: DropdownButton(
+                        style: TextStyle(color: Colors.grey),
                         isExpanded: true,
-                        dropdownColor: Colors.grey,
-                        value: null,
-                        menuWidth: MediaQuery.sizeOf(context).width,
+                        dropdownColor: Colors.black,
+                        value: NoteScreenController.selectedCategory,
+                        menuWidth: MediaQuery.sizeOf(context).width * .7,
                         hint: Text(
                           "Select",
                           style: TextStyle(color: Colors.grey),
                         ),
-                        items: [
-                          DropdownMenuItem(
-                              child: Text("CAt 1"), value: "cat 1"),
-                          DropdownMenuItem(
-                              child: Text("CAt 2"), value: "cat 2"),
-                        ],
-                        onChanged: (value) {},
+                        items: List.generate(
+                          NoteScreenController.categories.length,
+                          (index) => DropdownMenuItem(
+                              child: Text(NoteScreenController.categories[index]
+                                  .toUpperCase()),
+                              value: NoteScreenController.categories[index]),
+                        ),
+                        onChanged: (value) {
+                          NoteScreenController.onCategorySelection(value);
+                          setState(() {});
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
               TextFormField(
+                controller: dateController,
+                readOnly: true,
+                onTap: () async {
+                  dateController.text =
+                      await NoteScreenController.onDateSelection(context);
+                },
                 style: TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  hintText: "Date",
-                  label: Text(
-                    "Select",
-                    style: TextStyle(
+                    label: Text(
+                      "Date",
+                      style: TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    hintStyle: TextStyle(
                       color: Colors.grey,
                     ),
-                  ),
-                  hintStyle: TextStyle(
-                    color: Colors.grey,
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.grey),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.white),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.red),
-                  ),
-                ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.red),
+                    ),
+                    suffixIcon: Icon(
+                      Icons.calendar_month,
+                      color: Colors.grey,
+                    )),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  NoteScreenController.addNote(
+                      title: titleController.text,
+                      des: desController.text,
+                      date: dateController.text);
+
+                  // Navigator.pushAndRemoveUntil(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => NoteScreen(),
+                  //   ),
+                  //   (route) => false,
+                  // );
+
+                  Navigator.pop(context);
+                },
                 child: Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(vertical: 10),

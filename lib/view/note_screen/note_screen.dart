@@ -1,11 +1,19 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:note_app_dec_sqflite/controller/note_screen_controller.dart';
 import 'package:note_app_dec_sqflite/view/add_note_screen/add_note_screen.dart';
 import 'package:note_app_dec_sqflite/view/note_details_screen/note_details_screen.dart';
 
-class NoteScreen extends StatelessWidget {
+class NoteScreen extends StatefulWidget {
   const NoteScreen({super.key});
 
+  @override
+  State<NoteScreen> createState() => _NoteScreenState();
+}
+
+class _NoteScreenState extends State<NoteScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -14,12 +22,15 @@ class NoteScreen extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           backgroundColor: Colors.black,
           elevation: 10,
-          onPressed: () {
-            Navigator.push(
+          onPressed: () async {
+            await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => AddNoteScreen(),
                 ));
+
+            log("added a note ");
+            setState(() {});
           },
           foregroundColor: Colors.white,
           child: Icon(
@@ -105,6 +116,7 @@ class NoteScreen extends StatelessWidget {
             // ),
             Expanded(
               child: MasonryGridView.builder(
+                itemCount: NoteScreenController.notesList.length,
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 mainAxisSpacing: 10,
                 crossAxisSpacing: 10,
@@ -128,7 +140,7 @@ class NoteScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Note Title",
+                          NoteScreenController.notesList[index]["title"],
                           maxLines: 3,
                           style: TextStyle(
                             color: Colors.black,
@@ -137,7 +149,7 @@ class NoteScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+                          NoteScreenController.notesList[index]["des"],
                           textAlign: TextAlign.justify,
                           maxLines: index + 1,
                           overflow: TextOverflow.ellipsis,
@@ -152,7 +164,7 @@ class NoteScreen extends StatelessWidget {
                           children: [
                             Icon(Icons.date_range),
                             Text(
-                              "20/05/2025",
+                              NoteScreenController.notesList[index]["date"],
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
