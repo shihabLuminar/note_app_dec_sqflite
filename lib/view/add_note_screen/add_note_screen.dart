@@ -166,19 +166,11 @@ class _AddNoteScreenState extends State<AddNoteScreen> {
                     )),
               ),
               InkWell(
-                onTap: () {
-                  NoteScreenController.addNote(
+                onTap: () async {
+                  await NoteScreenController.addNote(
                       title: titleController.text,
                       des: desController.text,
                       date: dateController.text);
-
-                  // Navigator.pushAndRemoveUntil(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //     builder: (context) => NoteScreen(),
-                  //   ),
-                  //   (route) => false,
-                  // );
 
                   Navigator.pop(context);
                 },

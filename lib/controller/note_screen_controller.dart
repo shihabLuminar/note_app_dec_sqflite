@@ -1,7 +1,13 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class NoteScreenController {
+  static late Database database;
   static List<Map> notesList = [];
   static String? selectedCategory; // varible for selected category
   static const List<String> categories = [
@@ -34,18 +40,51 @@ class NoteScreenController {
     selectedCategory = value;
   }
 
-  static void addNote({
+  // static void addNote({
+  //   required String title,
+  //   required String des,
+  //   required String date,
+  // }) {
+  //   Map note = {
+  //     "title": title,
+  //     "des": des,
+  //     "date": date,
+  //     "category": selectedCategory,
+  //   };
+
+  //   notesList.add(note);
+  // }
+
+  // sqflite codes ----
+
+  static Future<void> initDb() async {
+    if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWeb;
+    }
+
+    // open the database
+    database = await openDatabase("note.db", version: 1,
+        onCreate: (Database db, int version) async {
+      // When creating the db, create the table
+      await db.execute(
+          'CREATE TABLE Note (id INTEGER PRIMARY KEY, title TEXT, des TEXT, date TEXT, category TEXT)');
+    });
+  }
+
+  static Future<void> addNote({
     required String title,
     required String des,
     required String date,
-  }) {
-    Map note = {
-      "title": title,
-      "des": des,
-      "date": date,
-      "category": selectedCategory,
-    };
+  }) async {
+    await database.rawInsert(
+        'INSERT INTO Note(title, des, date, category) VALUES(?, ?, ?, ?)',
+        [title, des, date, selectedCategory]);
 
-    notesList.add(note);
+    await getAllNotes();
+  }
+
+  static Future<void> getAllNotes() async {
+    notesList = await database.rawQuery('SELECT * FROM Note');
+    log(notesList.toString());
   }
 }
