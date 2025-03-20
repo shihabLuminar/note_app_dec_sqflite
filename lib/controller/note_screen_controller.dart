@@ -87,4 +87,20 @@ class NoteScreenController {
     notesList = await database.rawQuery('SELECT * FROM Note');
     log(notesList.toString());
   }
+
+  static Future<void> deleteNote(var noteId) async {
+    await database.rawDelete('DELETE FROM Note WHERE id = ?', [noteId]);
+    await getAllNotes();
+  }
+
+  static Future<void> updateNote(
+      {required String title,
+      required String des,
+      required String date,
+      var noteId}) async {
+    await database.rawUpdate(
+        'UPDATE Note SET title = ?, des = ?, date = ?, category = ? WHERE id = ?',
+        [title, des, date, selectedCategory, noteId]);
+    await getAllNotes();
+  }
 }
